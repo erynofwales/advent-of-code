@@ -24,16 +24,10 @@ pub fn main(filename: &str) -> Result<()> {
         priority_letters.extend(intersection);
     }
 
-    println!("{}", priority_letters
-        .iter()
-        .map(|c| String::from(*c))
-        .collect::<Vec<String>>()
-        .join(" "));
-
     const LOWERCASE_A_SCORE: u32 = 'a' as u32;
     const UPPERCASE_A_SCORE: u32 = 'A' as u32;
 
-    let scored_priority_letters: Vec<u32> =
+    let sum_of_scored_priority_letters: u32 =
         priority_letters
             .iter()
             .map(|c| -> u32 {
@@ -44,16 +38,8 @@ pub fn main(filename: &str) -> Result<()> {
                     char_value - UPPERCASE_A_SCORE + 27
                 }
             })
-            .collect();
+            .sum();
 
-    println!("{}", scored_priority_letters
-        .iter()
-        .map(|i| i.to_string())
-        .collect::<Vec<String>>()
-        .join(" "));
-
-    let sum_of_scored_priority_letters: u32 = scored_priority_letters
-        .iter().sum();
     println!("Part 1: sum of scores of all priority items: {}", sum_of_scored_priority_letters);
 
     Ok(())
