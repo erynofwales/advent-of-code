@@ -3,6 +3,7 @@ use std::env;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 mod file;
 
 fn main() {
@@ -24,4 +25,9 @@ fn main() {
     let day3_datafile = &args[3];
     day3::main(day3_datafile.as_str())
         .expect("Unable to process day3 data file");
+
+    println!("----- Day 4 -----");
+    let day4_datafile = &args[4];
+    day4::main(day4_datafile.as_str())
+        .expect("Unable to process day4 data file");
 }
