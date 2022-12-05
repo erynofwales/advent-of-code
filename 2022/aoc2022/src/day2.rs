@@ -96,7 +96,6 @@ impl Outcome {
 }
 
 struct Round {
-    opponent: Shape,
     me: Shape,
     outcome: Outcome,
 }
@@ -107,7 +106,6 @@ impl Round {
         match (Shape::part1_from_string(split[0]), Shape::part1_from_string(split[1])) {
             (Some(opponents_shape), Some(my_shape)) => {
                 Some(Round {
-                    opponent: opponents_shape,
                     me: my_shape, 
                     outcome: Outcome::with_shapes(opponents_shape, my_shape)
                 })
@@ -121,7 +119,6 @@ impl Round {
         match (Shape::part2_from_string(split[0]), Outcome::part2_from_string(split[1])) {
             (Some(opponents_shape), Some(expected_outcome)) => {
                 Some(Round {
-                    opponent: opponents_shape,
                     me: Shape::part2_from_shape_and_outcome(opponents_shape, expected_outcome),
                     outcome: expected_outcome
                 })

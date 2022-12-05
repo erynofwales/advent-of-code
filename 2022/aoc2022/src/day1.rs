@@ -5,31 +5,32 @@ use std::io::Result;
 
 use crate::file::line_reader_for_file;
 
-fn get_calorie_totals<R: Read + BufRead>(lines: Lines<R>) -> Vec<u32> {
+fn get_calorie_totals<R: Read + BufRead>(lines: Lines<R>) -> Result<Vec<u32>> {
     let mut elves: Vec<u32> = Vec::new();
     let mut current_calorie_count: u32 = 0;
 
     for line in lines {
-        let unwrapped_line = line.unwrap();
-        if unwrapped_line.is_empty() {
+        let line = line?;
+        if line.is_empty() {
             elves.push(current_calorie_count);
             current_calorie_count = 0;
             continue;
         }
 
-        let u32_value = u32::from_str_radix(&unwrapped_line, 10)
-            .expect(format!("Couldn't read u32 value from string: {}", unwrapped_line).as_str());
+        let u32_value = u32::from_str_radix(&line, 10)
+            .expect(format!("Couldn't read u32 value from string: {}", line).as_str());
         current_calorie_count += u32_value;
     }
 
     elves.sort_unstable_by(|a, b| b.cmp(a));
-    elves
+    Ok(elves)
 }
 
-pub fn main(input_filename: &String) -> Result<()> {
-    let line_reader = line_reader_for_file(input_filename.as_str())
+pub fn main(input_filename: &str) -> Result<()> {
+    let line_reader = line_reader_for_file(input_filename)
         .expect(format!("Unable to create line reader for file: {}", input_filename).as_str());
-    let elves = get_calorie_totals(line_reader);
+    let elves = get_calorie_totals(line_reader)
+        .expect("Unable to get knapsack calorie totals");
 
     println!("Part 1: Elf with highest calorie count in knapsack: {}", elves[0]);
 

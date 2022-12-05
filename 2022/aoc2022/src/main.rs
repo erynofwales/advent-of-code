@@ -13,17 +13,17 @@ fn main() {
 
     println!("----- Day 1 -----");
     let day1_datafile = &args[1];
-    day1::main(day1_datafile)
+    day1::main(&day1_datafile)
         .expect("Unable to process day1 data file");
 
     println!("----- Day 2 -----");
     let day2_datafile = &args[2];
-    day2::main(day2_datafile.as_str())
+    day2::main(&day2_datafile)
         .expect("Unable to process day2 data file");
 
     println!("----- Day 3 -----");
     let day3_datafile = &args[3];
-    day3::main(day3_datafile.as_str())
+    day3::main(&day3_datafile)
         .expect("Unable to process day3 data file");
 
     println!("----- Day 4 -----");
