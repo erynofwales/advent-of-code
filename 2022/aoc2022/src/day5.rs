@@ -13,11 +13,23 @@ enum State {
 struct Stacks(Vec<Vec<String>>);
 
 impl Stacks {
-    fn perform(&mut self, instruction: Instruction) -> std::result::Result<(), &'static str> {
+    fn part1_perform(&mut self, instruction: &Instruction) -> std::result::Result<(), &'static str> {
         for _ in 0..instruction.quantity {
             let item = self.0[instruction.from_stack].pop().unwrap();
             self.0[instruction.to_stack].push(item);
         }
+        Ok(())
+    }
+
+    fn part2_perform(&mut self, instruction: &Instruction) -> std::result::Result<(), &'static str> {
+        let from_stack_len: usize = self.0[instruction.from_stack].len();
+        let index_of_last_n = from_stack_len - instruction.quantity;
+
+        let last_n = Vec::from(self.0[instruction.from_stack].split_at(index_of_last_n).1);
+        self.0[instruction.to_stack].extend(last_n.into_iter());
+
+        let _ = self.0[instruction.from_stack].drain(index_of_last_n..);
+
         Ok(())
     }
 
@@ -92,7 +104,8 @@ pub fn main(filename: &str) -> Result<()> {
 
     let first_line = line_reader.peek().unwrap().as_ref().unwrap();
     let number_of_stacks = (first_line.len() as f32 / 4.0).ceil() as usize;
-    let mut stacks = Stacks(vec![vec![]; number_of_stacks]);
+    let mut part1_stacks = Stacks(vec![vec![]; number_of_stacks]);
+    let mut part2_stacks = Stacks(vec![vec![]; number_of_stacks]);
 
     let mut state = State::StartingState;
 
@@ -113,7 +126,8 @@ pub fn main(filename: &str) -> Result<()> {
                     // Read the line in 4 character chunks.
                     let stack: Vec<char> = chars.by_ref().take(4).collect();
                     if stack[0] == '[' {
-                        stacks.0[index_of_stack].insert(0, String::from(stack[1]));
+                        part1_stacks.0[index_of_stack].insert(0, String::from(stack[1]));
+                        part2_stacks.0[index_of_stack].insert(0, String::from(stack[1]));
                     }
 
                     index_of_stack += 1;
@@ -121,13 +135,16 @@ pub fn main(filename: &str) -> Result<()> {
             },
             State::Instructions => {
                 let instruction = Instruction::try_from(line.as_str()).unwrap();
-                let _ = stacks.perform(instruction);
+                let _ = part1_stacks.part1_perform(&instruction);
+                let _ = part2_stacks.part2_perform(&instruction);
             },
         }
     }
 
-    println!("{}", stacks);
-    println!("Part 1: tops of stacks: {}", stacks.tops().collect::<Vec<&str>>().join(""));
+    println!("{}", part1_stacks);
+    println!("Part 1: tops of stacks: {}", part1_stacks.tops().collect::<Vec<&str>>().join(""));
+    println!("{}", part2_stacks);
+    println!("Part 2: tops of stacks: {}", part2_stacks.tops().collect::<Vec<&str>>().join(""));
 
     Ok(())
 }
