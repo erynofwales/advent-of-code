@@ -6,14 +6,17 @@ use crate::file::line_reader_for_file;
 #[derive(PartialEq)]
 enum State {
     StartingState,
-    Instructions
+    Instructions,
 }
 
 #[derive(Debug)]
 struct Stacks(Vec<Vec<String>>);
 
 impl Stacks {
-    fn part1_perform(&mut self, instruction: &Instruction) -> std::result::Result<(), &'static str> {
+    fn part1_perform(
+        &mut self,
+        instruction: &Instruction,
+    ) -> std::result::Result<(), &'static str> {
         for _ in 0..instruction.quantity {
             let item = self.0[instruction.from_stack].pop().unwrap();
             self.0[instruction.to_stack].push(item);
@@ -21,7 +24,10 @@ impl Stacks {
         Ok(())
     }
 
-    fn part2_perform(&mut self, instruction: &Instruction) -> std::result::Result<(), &'static str> {
+    fn part2_perform(
+        &mut self,
+        instruction: &Instruction,
+    ) -> std::result::Result<(), &'static str> {
         let from_stack_len: usize = self.0[instruction.from_stack].len();
         let index_of_last_n = from_stack_len - instruction.quantity;
 
@@ -40,10 +46,16 @@ impl Stacks {
 
 impl fmt::Display for Stacks {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0.iter().enumerate()
-            .map(|(i, v)| format!("{}: {}", i, v.join(", ")))
-            .collect::<Vec<String>>()
-            .join("\n"))
+        write!(
+            f,
+            "{}",
+            self.0
+                .iter()
+                .enumerate()
+                .map(|(i, v)| format!("{}: {}", i, v.join(", ")))
+                .collect::<Vec<String>>()
+                .join("\n")
+        )
     }
 }
 
@@ -51,7 +63,7 @@ impl fmt::Display for Stacks {
 struct Instruction {
     quantity: usize,
     from_stack: usize,
-    to_stack: usize
+    to_stack: usize,
 }
 
 impl TryFrom<&str> for Instruction {
@@ -92,7 +104,7 @@ impl TryFrom<&str> for Instruction {
         }
 
         Ok(Instruction {
-            quantity: quantity, 
+            quantity: quantity,
             from_stack: from_stack,
             to_stack: to_stack,
         })
@@ -132,19 +144,25 @@ pub fn main(filename: &str) -> Result<()> {
 
                     index_of_stack += 1;
                 }
-            },
+            }
             State::Instructions => {
                 let instruction = Instruction::try_from(line.as_str()).unwrap();
                 let _ = part1_stacks.part1_perform(&instruction);
                 let _ = part2_stacks.part2_perform(&instruction);
-            },
+            }
         }
     }
 
     println!("{}", part1_stacks);
-    println!("Part 1: tops of stacks: {}", part1_stacks.tops().collect::<Vec<&str>>().join(""));
+    println!(
+        "Part 1: tops of stacks: {}",
+        part1_stacks.tops().collect::<Vec<&str>>().join("")
+    );
     println!("{}", part2_stacks);
-    println!("Part 2: tops of stacks: {}", part2_stacks.tops().collect::<Vec<&str>>().join(""));
+    println!(
+        "Part 2: tops of stacks: {}",
+        part2_stacks.tops().collect::<Vec<&str>>().join("")
+    );
 
     Ok(())
 }

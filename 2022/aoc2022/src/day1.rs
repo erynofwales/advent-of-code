@@ -29,14 +29,18 @@ fn get_calorie_totals<R: Read + BufRead>(lines: Lines<R>) -> Result<Vec<u32>> {
 pub fn main(input_filename: &str) -> Result<()> {
     let line_reader = line_reader_for_file(input_filename)
         .expect(format!("Unable to create line reader for file: {}", input_filename).as_str());
-    let elves = get_calorie_totals(line_reader)
-        .expect("Unable to get knapsack calorie totals");
+    let elves = get_calorie_totals(line_reader).expect("Unable to get knapsack calorie totals");
 
-    println!("Part 1: Elf with highest calorie count in knapsack: {}", elves[0]);
+    println!(
+        "Part 1: Elf with highest calorie count in knapsack: {}",
+        elves[0]
+    );
 
     let sum_of_top_three = &elves[0] + &elves[1] + &elves[2];
-    println!("Part 2: Elves with top 3 highest calorie counts in their knapsacks: {}, {}, {} = {}",
-        &elves[0], &elves[1], &elves[2], sum_of_top_three);
+    println!(
+        "Part 2: Elves with top 3 highest calorie counts in their knapsacks: {}, {}, {} = {}",
+        &elves[0], &elves[1], &elves[2], sum_of_top_three
+    );
 
     Ok(())
 }

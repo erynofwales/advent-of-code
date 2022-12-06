@@ -11,7 +11,11 @@ const SCORE_FOR_DRAW: i32 = 3;
 const SCORE_FOR_LOSS: i32 = 0;
 
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
-enum Shape { Rock, Paper, Scissors }
+enum Shape {
+    Rock,
+    Paper,
+    Scissors,
+}
 
 impl Shape {
     fn part1_from_string(s: &str) -> Option<Shape> {
@@ -68,7 +72,11 @@ impl Shape {
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
-enum Outcome { Win, Draw, Loss }
+enum Outcome {
+    Win,
+    Draw,
+    Loss,
+}
 
 impl Outcome {
     fn part2_from_string(s: &str) -> Option<Outcome> {
@@ -76,7 +84,7 @@ impl Outcome {
             "X" => Some(Outcome::Loss),
             "Y" => Some(Outcome::Draw),
             "Z" => Some(Outcome::Win),
-            _ => None
+            _ => None,
         }
     }
 
@@ -103,27 +111,29 @@ struct Round {
 impl Round {
     fn part1_from_string(s: &str) -> Option<Round> {
         let split: Vec<&str> = s.split(" ").collect();
-        match (Shape::part1_from_string(split[0]), Shape::part1_from_string(split[1])) {
-            (Some(opponents_shape), Some(my_shape)) => {
-                Some(Round {
-                    me: my_shape, 
-                    outcome: Outcome::with_shapes(opponents_shape, my_shape)
-                })
-            },
-            _ => None
+        match (
+            Shape::part1_from_string(split[0]),
+            Shape::part1_from_string(split[1]),
+        ) {
+            (Some(opponents_shape), Some(my_shape)) => Some(Round {
+                me: my_shape,
+                outcome: Outcome::with_shapes(opponents_shape, my_shape),
+            }),
+            _ => None,
         }
     }
 
     fn part2_from_string(s: &str) -> Option<Round> {
         let split: Vec<&str> = s.split(" ").collect();
-        match (Shape::part2_from_string(split[0]), Outcome::part2_from_string(split[1])) {
-            (Some(opponents_shape), Some(expected_outcome)) => {
-                Some(Round {
-                    me: Shape::part2_from_shape_and_outcome(opponents_shape, expected_outcome),
-                    outcome: expected_outcome
-                })
-            },
-            _ => None
+        match (
+            Shape::part2_from_string(split[0]),
+            Outcome::part2_from_string(split[1]),
+        ) {
+            (Some(opponents_shape), Some(expected_outcome)) => Some(Round {
+                me: Shape::part2_from_shape_and_outcome(opponents_shape, expected_outcome),
+                outcome: expected_outcome,
+            }),
+            _ => None,
         }
     }
 
@@ -156,7 +166,8 @@ pub fn main(input_filename: &str) -> Result<()> {
     let mut part2_total_score: i32 = 0;
 
     for line in line_reader {
-        let line = line.expect(format!("Failed to read line after {} rounds!", number_of_rounds).as_str());
+        let line =
+            line.expect(format!("Failed to read line after {} rounds!", number_of_rounds).as_str());
         if let Some(round) = Round::part1_from_string(&line) {
             part1_total_score += round.score();
         }
@@ -168,7 +179,10 @@ pub fn main(input_filename: &str) -> Result<()> {
 
     println!("Processed {} rounds", number_of_rounds);
     println!("Part 1: total score two shapes: {}", part1_total_score);
-    println!("Part 2: total score with expected outcomes: {}", part2_total_score);
+    println!(
+        "Part 2: total score with expected outcomes: {}",
+        part2_total_score
+    );
 
     Ok(())
 }
