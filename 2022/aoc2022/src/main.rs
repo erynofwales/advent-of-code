@@ -1,4 +1,5 @@
 use std::env;
+use std::path::Path;
 
 mod day1;
 mod day2;
@@ -8,27 +9,26 @@ mod day5;
 mod file;
 
 fn main() {
+    let days = [day1::main, day2::main, day3::main, day4::main, day5::main];
+
     let args: Vec<String> = env::args().collect();
 
-    assert!(args.len() >= 3, "Missing command line arguments");
+    let datafile_path = Path::new(&args[1]);
+    if !datafile_path.is_dir() {
+        println!("{} is not a path to a directory!", datafile_path.display());
+        return;
+    }
 
-    println!("----- Day 1 -----");
-    let day1_datafile = &args[1];
-    day1::main(&day1_datafile).expect("Unable to process day1 data file");
-
-    println!("----- Day 2 -----");
-    let day2_datafile = &args[2];
-    day2::main(&day2_datafile).expect("Unable to process day2 data file");
-
-    println!("----- Day 3 -----");
-    let day3_datafile = &args[3];
-    day3::main(&day3_datafile).expect("Unable to process day3 data file");
-
-    println!("----- Day 4 -----");
-    let day4_datafile = &args[4];
-    day4::main(day4_datafile.as_str()).expect("Unable to process day4 data file");
-
-    println!("----- Day 5 -----");
-    let day5_datafile = &args[5];
-    day5::main(day5_datafile.as_str()).expect("Unable to process day5 data file");
+    args.iter().skip(2).for_each(|arg| {
+        if let Ok(module_number) = usize::from_str_radix(arg, 10) {
+            println!("----- Day {} -----", module_number);
+            if let Some(datafile) = datafile_path
+                .join(format!("day{}-input.txt", module_number))
+                .as_path()
+                .to_str()
+            {
+                days[module_number - 1](datafile).expect("Unable to process day1 data file");
+            }
+        }
+    });
 }
