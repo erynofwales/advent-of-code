@@ -4,6 +4,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 mod file;
 
 fn main() {
@@ -30,4 +31,9 @@ fn main() {
     let day4_datafile = &args[4];
     day4::main(day4_datafile.as_str())
         .expect("Unable to process day4 data file");
+
+    println!("----- Day 5 -----");
+    let day5_datafile = &args[5];
+    day5::main(day5_datafile.as_str())
+        .expect("Unable to process day5 data file");
 }
