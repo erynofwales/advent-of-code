@@ -17,6 +17,7 @@ fn main() {
         day4::main,
         day5::main,
         day6::main,
+        //day7::main,
     ];
 
     let args: Vec<String> = env::args().collect();
