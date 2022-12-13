@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 const INPUT: &'static str = include_str!("../../Data/day7-input.txt");
 
+/*
 #[derive(Debug)]
 struct DirectoryStack<'a> {
     stack: Vec<&'a Directory>,
@@ -91,8 +92,10 @@ impl Directory {
             + self.directories.values().map(|d| d.size()).sum::<u32>()
     }
 }
+*/
 
 pub fn main(_filename: &str) -> std::io::Result<()> {
+    /*
     let line_reader = INPUT.lines();
 
     let root = Directory::new("/");
@@ -141,6 +144,7 @@ pub fn main(_filename: &str) -> std::io::Result<()> {
         }
     }
 
+    */
     Ok(())
 }
 
