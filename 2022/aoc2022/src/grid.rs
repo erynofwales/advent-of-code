@@ -27,65 +27,6 @@ impl Direction {
     }
 }
 
-#[derive(Debug)]
-struct Grid<T: Clone + Copy> {
-    grid: Vec<Vec<T>>,
-}
-
-impl<T> Grid<T>
-where
-    T: Clone + Copy,
-{
-    pub fn new(size: usize, item: T) -> Grid<T> {
-        let vectors = (0..size).map(|_| vec![item; size]).collect::<Vec<Vec<T>>>();
-        Grid { grid: vectors }
-    }
-
-    pub fn height(&self) -> usize {
-        self.grid.len()
-    }
-
-    pub fn width(&self) -> usize {
-        self.grid[0].len()
-    }
-
-    pub fn get_at(&self, pt: &Point) -> Option<&T> {
-        if let Some(row) = self.grid.get(pt.y as usize) {
-            row.get(pt.x as usize)
-        } else {
-            None
-        }
-    }
-
-    pub fn set_at(&mut self, pt: &Point, value: T) -> Result<(), &str> {
-        if let Some(row) = self.grid.get_mut(pt.y as usize) {
-            if pt.x < row.len() as i32 {
-                row[pt.x as usize] = value;
-                Ok(())
-            } else {
-                Err("Unable to set")
-            }
-        } else {
-            Err("Unable to set")
-        }
-    }
-
-    pub fn iter_points(&self) -> Box<dyn Iterator<Item = Point>> {
-        let width = self.width();
-        Box::new(
-            (0..self.height())
-                .map(move |y| (0..width).map(move |x| Point::new(x as i32, y as i32)))
-                .flatten(),
-        )
-    }
-}
-
-impl<T: Clone + Copy> From<Vec<Vec<T>>> for Grid<T> {
-    fn from(grid: Vec<Vec<T>>) -> Grid<T> {
-        Grid { grid }
-    }
-}
-
 /**
  * A point in standard coordinates, where Y values grow in the positively in the North direction.
  */
