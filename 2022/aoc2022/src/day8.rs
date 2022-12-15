@@ -1,37 +1,10 @@
+use crate::grid::{Direction, Point};
 use std::collections::HashSet;
 
+/*
+type UnsignedPoint = Point;
+
 const INPUT: &'static str = include_str!("../../Data/day8-input.txt");
-
-#[derive(Clone, Copy, Debug)]
-enum Direction {
-    North,
-    East,
-    South,
-    West,
-}
-
-impl Direction {
-    fn all() -> &'static [Direction] {
-        &[
-            Direction::North,
-            Direction::East,
-            Direction::South,
-            Direction::West,
-        ]
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-struct Point {
-    x: usize,
-    y: usize,
-}
-
-impl std::fmt::Display for Point {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {})", self.x, self.y)
-    }
-}
 
 #[derive(Debug)]
 struct Grid {
@@ -51,11 +24,11 @@ impl Grid {
         self.grid[0].len()
     }
 
-    fn tree_height_at(&self, at: Point) -> Option<i8> {
-        Some(self.grid[at.y][at.x].clone())
+    fn tree_height_at(&self, at: UnsignedPoint) -> Option<i8> {
+        Some(self.grid[at.y as usize][at.x as usize].clone())
     }
 
-    fn scenic_score_at(&self, at: Point) -> i32 {
+    fn scenic_score_at(&self, at: UnsignedPoint) -> i32 {
         let height = self.tree_height_at(at);
 
         let mut scores = [0, 0, 0, 0];
@@ -77,26 +50,30 @@ impl Grid {
         total_score
     }
 
-    fn iter_points(&self) -> Box<dyn Iterator<Item = Point>> {
-        let width = self.width();
+    fn iter_points(&self) -> Box<dyn Iterator<Item = UnsignedPoint>> {
+        let width = self.width() as i32;
         Box::new(
             (0..self.height())
-                .map(move |y| (0..width).map(move |x| Point { x, y }))
+                .map(move |y| (0..width).map(move |x| UnsignedPoint::new(x as i32, y as i32)))
                 .flatten(),
         )
     }
 
     fn iter_points_from_edge_to_point_in_direction(
         &self,
-        point: Point,
+        point: UnsignedPoint,
         direction: Direction,
-    ) -> Box<dyn Iterator<Item = Point>> {
-        let width = self.width();
-        let height = self.height();
+    ) -> Box<dyn Iterator<Item = UnsignedPoint>> {
+        let width = self.width() as i32;
+        let height = self.height() as i32;
 
-        let closure: Box<dyn Fn(usize) -> Point> = match direction {
-            Direction::North | Direction::South => Box::new(move |y| Point { x: point.x, y }),
-            Direction::East | Direction::West => Box::new(move |x| Point { x, y: point.y }),
+        let closure: Box<dyn Fn(i32) -> UnsignedPoint> = match direction {
+            Direction::North | Direction::South => {
+                Box::new(move |y| UnsignedPoint::new(point.x, y as i32))
+            }
+            Direction::East | Direction::West => {
+                Box::new(move |x| UnsignedPoint::new(x as i32, point.y))
+            }
         };
 
         match direction {
@@ -109,15 +86,17 @@ impl Grid {
 
     fn iter_points_from_point_to_edge_in_direction(
         &self,
-        point: Point,
+        point: UnsignedPoint,
         direction: Direction,
-    ) -> Box<dyn Iterator<Item = Point>> {
-        let width = self.width();
-        let height = self.height();
+    ) -> Box<dyn Iterator<Item = UnsignedPoint>> {
+        let width = self.width() as i32;
+        let height = self.height() as i32;
 
-        let closure: Box<dyn Fn(usize) -> Point> = match direction {
-            Direction::North | Direction::South => Box::new(move |y| Point { x: point.x, y }),
-            Direction::East | Direction::West => Box::new(move |x| Point { x, y: point.y }),
+        let closure: Box<dyn Fn(i32) -> UnsignedPoint> = match direction {
+            Direction::North | Direction::South => {
+                Box::new(move |y| UnsignedPoint::new(point.x, y as i32))
+            }
+            Direction::East | Direction::West => Box::new(move |x| UnsignedPoint::new(x, point.y)),
         };
 
         match direction {
@@ -128,10 +107,10 @@ impl Grid {
         }
     }
 
-    fn print_with_visible_set(&self, visible_trees: &HashSet<Point>) {
+    fn print_with_visible_set(&self, visible_trees: &HashSet<UnsignedPoint>) {
         for y in 0..self.height() {
             for x in 0..self.width() {
-                let pt = Point { x, y };
+                let pt = UnsignedPoint::new(x as i32, y as i32);
                 let height = self.tree_height_at(pt).unwrap();
                 if visible_trees.contains(&pt) {
                     print!("\x1B[32m{}\x1B[0m", height);
@@ -143,8 +122,10 @@ impl Grid {
         }
     }
 }
+*/
 
 pub fn main(_filename: &str) -> std::io::Result<()> {
+    /*
     let grid = Grid::new(
         INPUT
             .lines()
@@ -156,7 +137,7 @@ pub fn main(_filename: &str) -> std::io::Result<()> {
             .collect(),
     );
 
-    let mut visible_trees: HashSet<Point> = HashSet::new();
+    let mut visible_trees: HashSet<UnsignedPoint> = HashSet::new();
     let mut highest_scenic_score: i32 = -1;
 
     for grid_pt in grid.iter_points() {
@@ -205,6 +186,7 @@ pub fn main(_filename: &str) -> std::io::Result<()> {
 
     println!("Part 1: Number of visible trees: {}", &visible_trees.len());
     println!("Part 2: Highest scenic score: {}", highest_scenic_score);
+    */
 
     Ok(())
 }
