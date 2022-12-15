@@ -1,6 +1,5 @@
-use std::io::Result;
-
-use crate::file::line_reader_for_file;
+use std::env;
+use std::fs;
 
 const SCORE_FOR_ROCK: i32 = 1;
 const SCORE_FOR_PAPER: i32 = 2;
@@ -158,16 +157,19 @@ impl Round {
     }
 }
 
-pub fn main(input_filename: &str) -> Result<()> {
-    let line_reader = line_reader_for_file(input_filename)?;
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+    let lines = file_contents.lines();
 
     let mut number_of_rounds: i32 = 0;
     let mut part1_total_score: i32 = 0;
     let mut part2_total_score: i32 = 0;
 
-    for line in line_reader {
-        let line =
-            line.expect(format!("Failed to read line after {} rounds!", number_of_rounds).as_str());
+    for line in lines {
         if let Some(round) = Round::part1_from_string(&line) {
             part1_total_score += round.score();
         }
@@ -183,6 +185,4 @@ pub fn main(input_filename: &str) -> Result<()> {
         "Part 2: total score with expected outcomes: {}",
         part2_total_score
     );
-
-    Ok(())
 }
