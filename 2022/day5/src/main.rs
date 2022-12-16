@@ -1,7 +1,6 @@
+use std::env;
 use std::fmt;
-use std::io::Result;
-
-use crate::file::line_reader_for_file;
+use std::fs;
 
 #[derive(PartialEq)]
 enum State {
@@ -111,19 +110,22 @@ impl TryFrom<&str> for Instruction {
     }
 }
 
-pub fn main(filename: &str) -> Result<()> {
-    let mut line_reader = line_reader_for_file(filename)?.peekable();
+fn main() {
+    let args: Vec<String> = env::args().collect();
 
-    let first_line = line_reader.peek().unwrap().as_ref().unwrap();
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+    let mut lines = file_contents.lines().peekable();
+
+    let first_line = lines.peek().unwrap();
     let number_of_stacks = (first_line.len() as f32 / 4.0).ceil() as usize;
     let mut part1_stacks = Stacks(vec![vec![]; number_of_stacks]);
     let mut part2_stacks = Stacks(vec![vec![]; number_of_stacks]);
 
     let mut state = State::StartingState;
 
-    for line in line_reader {
-        let line = line?;
-
+    for line in lines {
         if line.is_empty() {
             assert!(state == State::StartingState);
             state = State::Instructions;
@@ -146,7 +148,7 @@ pub fn main(filename: &str) -> Result<()> {
                 }
             }
             State::Instructions => {
-                let instruction = Instruction::try_from(line.as_str()).unwrap();
+                let instruction = Instruction::try_from(line).unwrap();
                 let _ = part1_stacks.part1_perform(&instruction);
                 let _ = part2_stacks.part2_perform(&instruction);
             }
@@ -163,6 +165,4 @@ pub fn main(filename: &str) -> Result<()> {
         "Part 2: tops of stacks: {}",
         part2_stacks.tops().collect::<Vec<&str>>().join("")
     );
-
-    Ok(())
 }
