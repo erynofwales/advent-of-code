@@ -1,7 +1,6 @@
-use std::io::Result;
+use std::env;
+use std::fs;
 use std::ops::RangeInclusive;
-
-use crate::file::line_reader_for_file;
 
 #[derive(PartialEq, PartialOrd)]
 struct RangeString(String);
@@ -55,10 +54,15 @@ impl Assignment {
     }
 }
 
-pub fn main(filename: &str) -> Result<()> {
-    let assignment_counts: (u32, u32, u32) = line_reader_for_file(filename)?
+pub fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+
+    let assignment_counts: (u32, u32, u32) = file_contents.lines()
         .map(|line| -> Assignment {
-            let line = line.unwrap();
             let mut elves = line.split(",").map(|s| RangeString::from(s));
             let assignment = Assignment::from_left_and_right_specifier(
                 elves.next().unwrap(),
@@ -89,6 +93,4 @@ pub fn main(filename: &str) -> Result<()> {
         "Part 2: number of assignments with ranges at least partially overlapping: {}",
         assignment_counts.2
     );
-
-    Ok(())
 }
