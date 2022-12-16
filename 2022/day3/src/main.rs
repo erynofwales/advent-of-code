@@ -1,8 +1,7 @@
 use std::collections::HashSet;
-use std::io::Result;
+use std::env;
+use std::fs;
 use std::iter::Iterator;
-
-use crate::file::line_reader_for_file;
 
 fn priority_items_in_knapsack(knapsack: &str) -> Vec<char> {
     assert!(knapsack.len() % 2 == 0);
@@ -28,16 +27,21 @@ fn badge_for_group(group: (&str, &str, &str)) -> Vec<char> {
     ab_intersection.intersection(&c_set).map(|c| *c).collect()
 }
 
-pub fn main(filename: &str) -> Result<()> {
-    let mut line_reader = line_reader_for_file(filename)?.peekable();
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+    let mut lines = file_contents.lines().peekable();
 
     let mut priority_letters: Vec<char> = Vec::new();
     let mut badges: Vec<char> = Vec::new();
 
-    while line_reader.peek().is_some() {
-        let a = line_reader.next().unwrap()?;
-        let b = line_reader.next().unwrap()?;
-        let c = line_reader.next().unwrap()?;
+    while lines.peek().is_some() {
+        let a = lines.next().unwrap();
+        let b = lines.next().unwrap();
+        let c = lines.next().unwrap();
 
         priority_letters.extend(priority_items_in_knapsack(&a));
         priority_letters.extend(priority_items_in_knapsack(&b));
@@ -79,6 +83,4 @@ pub fn main(filename: &str) -> Result<()> {
         .sum();
 
     println!("Part 2: sum of badges: {}", sum_of_badges);
-
-    Ok(())
 }
