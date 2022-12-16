@@ -1,7 +1,6 @@
-use crate::grid::{Direction, Point};
+use geometry::{Direction, Point};
 use std::collections::HashSet;
-
-const INPUT: &'static str = include_str!("../../Data/day9-input.txt");
+use std::{env, fs};
 
 type SignedPoint = Point;
 
@@ -19,7 +18,6 @@ impl Rope {
     fn move_head(&mut self, direction: Direction) {
         if let Some(head) = self.nodes.first_mut() {
             head.move_by_one_in(direction);
-            println!("{}", &head);
             for i in 1..self.nodes.len() {
                 let first = self.nodes[i - 1].clone();
                 let mut second = self.nodes.get_mut(i).unwrap();
@@ -59,14 +57,20 @@ impl Rope {
     }
 }
 
-pub fn main(_filename: &str) -> std::io::Result<()> {
+pub fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+
     let mut visited_points: HashSet<SignedPoint> = HashSet::new();
     let mut long_rope_visited_points: HashSet<SignedPoint> = HashSet::new();
 
     let mut rope = Rope::with_length(2);
     let mut long_rope = Rope::with_length(10);
 
-    for line in INPUT.lines() {
+    for line in file_contents.lines() {
         let mut split_line = line.split(" ");
 
         let direction = Direction::from_relative_direction(split_line.next().unwrap()).unwrap();
@@ -93,6 +97,4 @@ pub fn main(_filename: &str) -> std::io::Result<()> {
         "Part 2: number of points tail node of long rope visited: {}",
         &long_rope_visited_points.len()
     );
-
-    Ok(())
 }
