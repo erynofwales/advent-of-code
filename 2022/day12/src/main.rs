@@ -57,7 +57,7 @@ impl PartialOrd for State {
 
 /// An implemetation of Dijkstra's algorithm to find the shortest path from start to end and return
 /// its length.
-fn find_length_of_shortest_path(squares: &Vec<Square>, start: usize, end: usize) -> u32 {
+fn find_length_of_shortest_path(squares: &Vec<Square>, start: usize, end: usize) -> Option<u32> {
     let mut distances: Vec<_> = (0..squares.len()).map(|_| u32::MAX).collect();
     let mut heap = BinaryHeap::new();
 
@@ -67,7 +67,7 @@ fn find_length_of_shortest_path(squares: &Vec<Square>, start: usize, end: usize)
 
     while let Some(State { node, cost }) = heap.pop() {
         if node == end {
-            return cost;
+            return Some(cost);
         }
 
         if cost > distances[node] {
@@ -91,7 +91,7 @@ fn find_length_of_shortest_path(squares: &Vec<Square>, start: usize, end: usize)
         }
     }
 
-    0
+    None
 }
 
 fn main() {
@@ -159,8 +159,18 @@ fn main() {
         }
     }
 
-    dbg!(&squares);
-
-    let length_of_shortest_path = find_length_of_shortest_path(&squares, start, end);
+    let length_of_shortest_path = find_length_of_shortest_path(&squares, start, end).unwrap();
     println!("Part 1: length of shortest path to location with best signal: {length_of_shortest_path}");
+
+    let mut paths_from_all_a_squares: Vec<(usize, u32)> = squares
+        .iter()
+        .enumerate()
+        .filter(|(_, sq)| sq.elevation() == 0)
+        .map(|(i, _)| (i, find_length_of_shortest_path(&squares, i, end)))
+        .filter(|(_, distance)| distance.is_some())
+        .map(|(i, distance)| (i, distance.unwrap()))
+        .collect();
+    paths_from_all_a_squares.sort_by(|a, b| b.1.cmp(&a.1));
+
+    dbg!(&paths_from_all_a_squares.last()); 
 }
