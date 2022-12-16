@@ -1,28 +1,26 @@
 use std::collections::HashSet;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::env;
+use std::fs;
 
-pub fn main(filename: &str) -> std::io::Result<()> {
-    let file = File::open(filename)?;
-    let reader = BufReader::new(file);
+fn main() {
+    let args: Vec<String> = env::args().collect();
 
-    let file_contents: Vec<char> = reader
+    let filename = args.get(1).expect("Missing filename argument");
+
+    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+    let character_stream: Vec<char> = file_contents
         .lines()
-        .map(|l| {
-            l.expect("Couldn't read line")
-                .chars()
-                .collect::<Vec<char>>()
-        })
+        .map(|l| l.chars().collect::<Vec<char>>())
         .flatten()
         .collect();
 
-    let (sop_offset, start_of_packet_marker) = file_contents
+    let (sop_offset, start_of_packet_marker) = character_stream
         .windows(4)
         .enumerate()
         .find(|(_, w)| HashSet::<&char>::from_iter(w.iter()).len() == 4)
         .expect("Couldn't find start-of-packet marker");
 
-    let (sow_offset, start_of_window_marker) = file_contents
+    let (sow_offset, start_of_window_marker) = character_stream
         .windows(14)
         .enumerate()
         .find(|(_, w)| HashSet::<&char>::from_iter(w.iter()).len() == 14)
@@ -47,6 +45,4 @@ pub fn main(filename: &str) -> std::io::Result<()> {
             .join(""),
         sow_offset + 14
     );
-
-    Ok(())
 }
