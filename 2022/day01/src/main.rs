@@ -1,5 +1,4 @@
-use std::env;
-use std::fs;
+use aoc;
 use std::str::Lines;
 
 fn get_calorie_totals(lines: Lines) -> Vec<u32> {
@@ -23,12 +22,9 @@ fn get_calorie_totals(lines: Lines) -> Vec<u32> {
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let filename = args.get(1).expect("Missing filename argument");
-
-    let file_contents = fs::read_to_string(&filename).expect("Unable to read file");
+    let file_contents = aoc::read_input_file_to_string();
     let lines = file_contents.lines();
+
     let elves = get_calorie_totals(lines);
 
     println!(
