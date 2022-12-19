@@ -1,6 +1,8 @@
 use std::convert::TryFrom;
 use std::{cmp, env, fmt, fs};
 
+const VERBOSE: bool = false;
+
 type Pair = (Packet, Packet);
 type Int = u32;
 
@@ -28,7 +30,9 @@ impl Datum {
 
 impl cmp::PartialOrd for Datum {
     fn partial_cmp(&self, other: &Datum) -> Option<cmp::Ordering> {
-        println!("  Compare {} vs {}", self, other);
+        if VERBOSE {
+            println!("  Compare {} vs {}", self, other);
+        }
         match (self, other) {
             (Datum::Int(self_value), Datum::Int(other_value)) => {
                 self_value.partial_cmp(other_value)
@@ -70,7 +74,7 @@ impl fmt::Display for Datum {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 struct Packet(Datum);
 
 impl TryFrom<&str> for Packet {
@@ -152,14 +156,30 @@ impl TryFrom<&str> for Packet {
     }
 }
 
+impl cmp::Ord for Packet {
+    fn cmp(&self, other: &Packet) -> cmp::Ordering {
+        self.partial_cmp(other).unwrap()
+    }
+}
+
 impl cmp::PartialOrd for Packet {
     fn partial_cmp(&self, other: &Packet) -> Option<cmp::Ordering> {
-        println!("Compare {} vs {}", self.0, other.0);
+        if VERBOSE {
+            println!("Compare {} vs {}", self.0, other.0);
+        }
 
         let ordering = self.0.partial_cmp(&other.0);
-        println!("  -> {:?}", ordering);
+        if VERBOSE {
+            println!("  -> {:?}", ordering);
+        }
 
         ordering
+    }
+}
+
+impl fmt::Debug for Packet {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
@@ -167,6 +187,12 @@ impl fmt::Display for Packet {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
+}
+
+fn last_two_packets(packets: &Vec<Packet>) -> (Packet, Packet) {
+    let (_, last_two) = packets.split_at(packets.len() - 2);
+
+    (last_two[0].clone(), last_two[1].clone())
 }
 
 fn main() {
@@ -182,25 +208,19 @@ fn main() {
 
     for line in lines {
         if line == "" {
-            let right = completed_packets.pop().expect("Missing right packet");
-            let left = completed_packets.pop().expect("Missing left packet");
-            println!("Completed pair!");
-
-            assert!(completed_packets.is_empty());
-
-            pairs.push((left, right));
+            pairs.push(last_two_packets(&completed_packets));
             continue;
         }
 
         let packet = Packet::try_from(line).expect("Unable to parse packet!");
-        println!("Completed packet! {}", &packet);
+        if VERBOSE {
+            println!("Completed packet! {}", &packet);
+        }
+
         completed_packets.push(packet);
     }
 
-    let right = completed_packets.pop().expect("Missing right packet");
-    let left = completed_packets.pop().expect("Missing left packet");
-    println!("Completed pair!");
-    pairs.push((left, right));
+    pairs.push(last_two_packets(&completed_packets));
 
     let pairs_in_right_order = pairs
         .iter()
@@ -224,6 +244,24 @@ fn main() {
         "Sum of indicies of pairs in correct order: {}",
         &pairs_in_right_order.iter().map(|(i, _)| i).sum::<usize>()
     );
+
+    println!("----- Divider Packets -----");
+    let divider_a = Packet(Datum::List(vec![Datum::List(vec![Datum::Int(2)])]));
+    let divider_b = Packet(Datum::List(vec![Datum::List(vec![Datum::Int(6)])]));
+
+    completed_packets.push(divider_a.clone());
+    completed_packets.push(divider_b.clone());
+    completed_packets.sort();
+
+    dbg!(&completed_packets);
+
+    let product_of_indexes_of_divider_packets: usize = completed_packets
+        .iter()
+        .enumerate()
+        .filter(|(_, p)| **p == divider_a || **p == divider_b)
+        .map(|(i, _)| i + 1)
+        .product();
+    println!("Product of indexes of divider packets: {product_of_indexes_of_divider_packets}");
 }
 
 #[cfg(test)]
